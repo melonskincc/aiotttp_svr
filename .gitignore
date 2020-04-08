@@ -4,3 +4,4 @@ log/
 venv/
 *.cfg
 __pycache__/
+*.log
