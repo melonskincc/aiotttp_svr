@@ -2,6 +2,6 @@ import asyncio
 
 
 async def task_a(app):
-    with True:
+    while True:
         print('doing something...')
         await asyncio.sleep(2)

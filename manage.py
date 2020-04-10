@@ -1,19 +1,13 @@
 import logging
-import asyncpgsa
 from aiohttp import web
-from aiohttp_security import SessionIdentityPolicy
-from aiohttp_security import authorized_userid
-from aiohttp_security import setup as setup_security
+from aiohttp_security import SessionIdentityPolicy, authorized_userid, setup as setup_security
 from aiohttp_session import setup as setup_session
 from aiohttp_session.redis_storage import RedisStorage
 import aioredis
-from sqlalchemy import create_engine
-
-from conf.settings import redis_addr, pg_dsn
+from conf.settings import redis_addr, pg_dsn, log_conf
 from handlers.routes import setup_routes
 from models.db_auth import DBAuthorizationPolicy
-
-
+from aiopg.sa import create_engine
 async def setup_db(app):
     pool = await aioredis.create_redis_pool(redis_addr, maxsize=20, encoding='utf-8')
     pg_pool = await create_engine(pg_dsn)
@@ -59,7 +53,8 @@ async def init_app():
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(**log_conf)
+
     app = init_app()
     web.run_app(app)
 
