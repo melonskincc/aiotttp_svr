@@ -1,7 +1,9 @@
 from handlers.user_handlers import *
+from websocket.ws import *
 
 
 def setup_routes(app):
+    app.router.add_view('/ws', WsView, name='ws')
     app.router.add_view('/', IndexView, name='index')
     app.router.add_view('/user/login', LoginView, name='login')
     app.router.add_view('/user/logout', LogoutView, name='logout')
