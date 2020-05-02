@@ -1,3 +1,4 @@
+aiohttp_cors
 msgpack
 aiohttp_security
 aioelasticsearch==0.6.0

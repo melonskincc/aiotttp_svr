@@ -1,6 +1,5 @@
 from sqlalchemy import *
 import bcrypt
-from aiopg import sa
 from sqlalchemy.ext.declarative import declarative_base
 
 metadata = MetaData()

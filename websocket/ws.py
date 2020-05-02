@@ -1,8 +1,15 @@
 import aiohttp
 from aiohttp import web
+from aiohttp_cors import CorsViewMixin, ResourceOptions
 
 
-class WsView(web.View):
+class WsView(web.View,CorsViewMixin):
+    cors_config = {
+        "*": ResourceOptions(
+            allow_credentials=True,
+            allow_headers="*",
+        )
+    }
     async def get(self):
         ws = web.WebSocketResponse()
         await ws.prepare(self.request)
