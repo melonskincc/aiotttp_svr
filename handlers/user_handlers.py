@@ -1,21 +1,23 @@
 from aiohttp import web
 from aiohttp_cors import CorsViewMixin
 from aiohttp_cors.resource_options import ResourceOptions
-from conf.define_static import RespCodeDefine
+from libs.resp_code_define import RespCodeDefine
 from models.user_models import users, make_pwd_hash, check_pwd
 import logging
 
 log = logging.getLogger(__name__)
 
+CONFIG = {
+    "*": ResourceOptions(
+        allow_credentials=True,
+        allow_headers="*",
+    )
+}
+
 
 class IndexView(web.View, CorsViewMixin):
     # 首页视图
-    cors_config = {
-        "*": ResourceOptions(
-            allow_credentials=True,
-            allow_headers="*",
-        )
-    }
+    cors_config = CONFIG
 
     async def get(self):
         return web.json_response({'ok': True})
@@ -23,12 +25,7 @@ class IndexView(web.View, CorsViewMixin):
 
 class LoginView(web.View, CorsViewMixin):
     # 登录视图
-    cors_config = {
-        "*": ResourceOptions(
-            allow_credentials=True,
-            allow_headers="*",
-        )
-    }
+    cors_config = CONFIG
 
     async def post(self):
         data = await self.request.json()
@@ -44,22 +41,17 @@ class LoginView(web.View, CorsViewMixin):
                 return web.json_response(RespCodeDefine.DataBaseErr)
             else:
                 if not user:
-                    return web.json_response(RespCodeDefine.UserDoesNotExist)
+                    return web.json_response(RespCodeDefine.UserPwdErr)
 
                 if check_pwd(pwd, user.password_hash):
-                    return web.json_response(RespCodeDefine.Success)
+                    return web.json_response({'code': 20000, 'data': {'token': '12356'}})
                 else:
-                    return web.json_response(RespCodeDefine.PwdErr)
+                    return web.json_response(RespCodeDefine.UserPwdErr)
 
 
 class LogoutView(web.View, CorsViewMixin):
     # 登出视图
-    cors_config = {
-        "*": ResourceOptions(
-            allow_credentials=True,
-            allow_headers="*",
-        )
-    }
+    cors_config = CONFIG
 
     async def post(self):
         return web.json_response({'ok': True})
@@ -67,12 +59,7 @@ class LogoutView(web.View, CorsViewMixin):
 
 class UsersView(web.View, CorsViewMixin):
     # 用户视图
-    cors_config = {  # 解决跨域请求问题
-        "*": ResourceOptions(
-            allow_credentials=True,
-            allow_headers="*",
-        )
-    }
+    cors_config = CONFIG
 
     async def get(self):
         # 获取用户

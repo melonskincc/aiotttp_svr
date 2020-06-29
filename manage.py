@@ -1,13 +1,15 @@
-import logging
+import logging, asyncio, uvloop, aioredis
+
+import aiohttp_cors
 from aiohttp import web
 from aiohttp_security import SessionIdentityPolicy, authorized_userid, setup as setup_security
 from aiohttp_session import setup as setup_session
 from aiohttp_session.redis_storage import RedisStorage
-import aioredis
 from conf.settings import redis_addr, pg_dsn, log_conf
 from handlers.routes import setup_routes
 from models.db_auth import DBAuthorizationPolicy
 from aiopg.sa import create_engine
+from libs.middleware import token_auth_middleware, user_loader
 
 
 async def setup_db(app):
@@ -42,13 +44,14 @@ async def current_user_ctx_processor(request):
 
 
 async def init_app():
-    app = web.Application()
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+    app = web.Application(debug=True,
+                          middlewares=[token_auth_middleware(user_loader=user_loader, exclude_routes=['/user/login'])])
     setup_routes(app)
     redis_pool, db_pool = await setup_db(app)
     app['websockets'] = dict()
     app.on_shutdown.append(clear_ws)
     setup_session(app, RedisStorage(redis_pool))
-
     # needs to be after session setup because of `current_user_ctx_processor` jinja2设置
     # aiohttp_jinja2.setup(
     #     app,

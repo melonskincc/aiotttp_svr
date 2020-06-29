@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 metadata = MetaData()
 base = declarative_base(metadata=metadata)
 
+
 def make_pwd_hash(pwd: str) -> str:
     return (bcrypt.hashpw(pwd.encode(), bcrypt.gensalt())).decode()
 
@@ -26,6 +27,7 @@ class A(base):
     __tablename__ = 'a'
     id = Column('id', Integer, primary_key=True, autoincrement=True)
     name = Column('name', String(255), nullable=False, default='')
+
 
 print(metadata.tables)
 tb_a = metadata.tables["a"]
