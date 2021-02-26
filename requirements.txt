@@ -2,7 +2,7 @@ aiohttp_cors
 msgpack
 aiohttp_security
 aioelasticsearch==0.6.0
-aiohttp==3.6.2
+aiohttp==3.7.4
 aiomysql==0.0.20
 aioredis==1.3.1
 alembic==1.4.2
